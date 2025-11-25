@@ -1,136 +1,86 @@
-import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
+import sequelize from '../config/db.js';
+import defineUser from '../models/User.js';
+import defineUserType from '../models/UserType.js';
 import logger from '../utils/logger.js';
 
-export const registerUser = async (userData) => {
-  try {
-    const { email, password, firstName, lastName, phone } = userData;
+const User = defineUser(sequelize);
+const UserType = defineUserType(sequelize);
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ where: { email } });
-    if (existingUser) {
-      throw new Error('User with this email already exists');
+// Ensure associations exist when models are instantiated directly here
+try {
+  if (typeof User.belongsTo === 'function' && typeof UserType === 'object') {
+    // attach association only if not already defined
+    if (!User.associations || !User.associations.userType) {
+      User.belongsTo(UserType, { foreignKey: 'UserTypeID', as: 'userType' });
     }
+    if (!UserType.associations || !UserType.associations.users) {
+      UserType.hasMany(User, { foreignKey: 'UserTypeID', as: 'users' });
+    }
+  }
+} catch (e) {
+  // ignore association errors
+}
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12);
+const JWT_SECRET = process.env.JWT_SECRET || 'supersecret';
+const JWT_EXPIRY = process.env.JWT_EXPIRY || '7d';
 
-    // Create user
-    const user = await User.create({
-      email,
-      password: hashedPassword,
-      firstName,
-      lastName,
-      phone,
-      role: 'user',
-      status: 'active'
-    });
+export const registerUser = async ({ uname, password, ProPicture, UserTypeID }) => {
+  try {
+    if (!uname || !password) throw new Error('Username and password are required');
 
-    logger.info(`User registered successfully: ${email}`);
+    const existing = await User.findOne({ where: { uname } });
+    if (existing) throw new Error('Username already exists');
 
-    return {
-      id: user.id,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      role: user.role
-    };
-  } catch (error) {
-    logger.error(`Registration error: ${error.message}`);
-    throw error;
+    // NOTE: Password hashing is intentionally disabled per request —
+    // storing plain-text password in `upassword`. This is insecure and
+    // should only be used for testing or legacy compatibility.
+    const created = await User.create({ uname, upassword: password, ProPicture, UserTypeID });
+
+    logger.info(`User registered: ${uname}`);
+
+    return { user: created }; 
+  } catch (err) {
+    logger.error('registerUser error', err.message);
+    throw err;
   }
 };
 
-export const loginUser = async (email, password) => {
+export const loginUser = async (uname, password) => {
   try {
-    // Find user by email
-    const user = await User.findOne({ where: { email } });
-    if (!user) {
-      throw new Error('Invalid credentials');
-    }
+    const user = await User.findOne({ where: { uname }, include: [{ model: UserType, as: 'userType' }] });
+    if (!user) throw new Error('Invalid credentials');
 
-    // Check if user is active
-    if (user.status !== 'active') {
-      throw new Error('User account is not active');
-    }
+    // Plain-text password comparison (insecure) per request
+    const isValid = (password === (user.upassword || ''));
+    if (!isValid) throw new Error('Invalid credentials');
 
-    // Compare passwords
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      throw new Error('Invalid credentials');
-    }
+    // Update password update / last login timestamp (non-blocking)
+    try { await user.update({ PasswordUpdate: new Date() }); } catch (e) { /* ignore */ }
 
-    // Update last login
-    await user.update({ lastLogin: new Date() });
+    const roleText = user.userType?.UserTypeText || 'user';
 
-    // Generate JWT token
-    const token = jwt.sign(
-      {
-        id: user.id,
-        email: user.email,
-        role: user.role
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRY || '7d' }
-    );
+    const token = jwt.sign({ uID: user.uID, uname: user.uname, role: roleText }, JWT_SECRET, { expiresIn: JWT_EXPIRY });
 
-    logger.info(`User logged in successfully: ${email}`);
-
-    return {
-      token,
-      user: {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        role: user.role
-      }
-    };
-  } catch (error) {
-    logger.error(`Login error: ${error.message}`);
-    throw error;
+    return { token, user };
+  } catch (err) {
+    logger.error('loginUser error', err.message);
+    throw err;
   }
 };
 
-export const updateUserProfile = async (userId, updateData) => {
-  try {
-    const user = await User.findByPk(userId);
-    if (!user) {
-      throw new Error('User not found');
-    }
-
-    const updated = await user.update(updateData);
-
-    logger.info(`User profile updated: ${userId}`);
-
-    return {
-      id: updated.id,
-      email: updated.email,
-      firstName: updated.firstName,
-      lastName: updated.lastName,
-      phone: updated.phone,
-      role: updated.role
-    };
-  } catch (error) {
-    logger.error(`Profile update error: ${error.message}`);
-    throw error;
-  }
+export const getUserById = async (uID) => {
+  const user = await User.findByPk(uID, { include: [{ model: UserType, as: 'userType' }] });
+  return user;
 };
 
-export const getUserById = async (userId) => {
-  try {
-    const user = await User.findByPk(userId, {
-      attributes: { exclude: ['password'] }
-    });
-
-    if (!user) {
-      throw new Error('User not found');
-    }
-
-    return user;
-  } catch (error) {
-    logger.error(`Get user error: ${error.message}`);
-    throw error;
-  }
+export const updateUserProfile = async (uID, data) => {
+  const user = await User.findByPk(uID);
+  if (!user) throw new Error('User not found');
+  const allowed = {};
+  if (data.uname) allowed.uname = data.uname;
+  if (data.ProPicture) allowed.ProPicture = data.ProPicture;
+  if (data.UserTypeID) allowed.UserTypeID = data.UserTypeID;
+  const updated = await user.update(allowed);
+  return updated;
 };

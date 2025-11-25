@@ -50,305 +50,62 @@ A professional-grade Customer Relationship Management (CRM) system built with No
 │   └── validation.js      # Input validation
 ├── models/
 │   ├── index.js           # Model loader
-│   └── User.js            # User model
-├── routes/
-│   └── auth.js            # Authentication routes
-├── services/
-│   └── authService.js     # Authentication business logic
-├── utils/
-│   └── logger.js          # Winston logger setup
-├── __tests__/             # Test files
-├── logs/                  # Application logs
-├── .env                   # Environment variables
-├── .env.example           # Example env file
-├── jest.config.js         # Jest configuration
-├── package.json           # Dependencies
-└── server.js              # Main application file
-```
+# Ameyo CRM (concise)
 
-## Installation
+Lightweight CRM API built with Node.js, Express, and Sequelize (MSSQL).
 
-### Prerequisites
-- Node.js (v14 or higher)
-- MySQL Server
-- npm or yarn
+This repository is configured to use an existing MSSQL database (`DristhiSoftTechDBOld`) and exposes authentication endpoints (register, login, profile). The project is intended to work with a pre-existing schema — automatic schema changes are disabled by default.
 
-### Setup Steps
+Quick facts
+- Frameworks: Node.js, Express
+- ORM: Sequelize (dialect: mssql)
+- Auth: JWT
+- DB: Microsoft SQL Server (existing schema)
 
-1. **Clone/Extract project**
-```bash
-cd CRM
-```
-
-2. **Install dependencies**
-```bash
+Quick start
+1. Install dependencies:
+```powershell
 npm install
 ```
-
-3. **Configure environment**
-```bash
-cp .env.example .env
-```
-
-Edit `.env` with your database credentials:
-```env
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_USER=root
-DB_PASSWORD=your_password
-JWT_SECRET=your_secret_key_change_this
-```
-
-4. **Create databases**
-```bash
-mysql -u root -p
-CREATE DATABASE crm_development;
-CREATE DATABASE crm_test;
-CREATE DATABASE crm_production;
-```
-
-5. **Run migrations** (if using sequelize-cli)
-```bash
-npm run db:migrate
-```
-
-## Running the Application
-
-### Development Mode
-```bash
+2. Copy `.env.example` to `.env` and set your DB and JWT values.
+3. Start the server:
+```powershell
+node server.js
+# or in dev:
 npm run dev
 ```
-Server runs at `http://localhost:5000` with nodemon auto-reload.
 
-### Production Mode
-```bash
-npm start
-```
+Important: DB sync
+- Sequelize auto-sync/alter is disabled by default. To allow it (development only), set `DB_SYNC=true` in your `.env`. Do not enable this against production databases unless you know what changes will be applied.
 
-### Testing
-```bash
-npm test              # Run all tests
-npm run test:watch   # Watch mode
-npm run test:coverage # Coverage report
-```
+API (auth)
+- POST `/api/auth/register` — register user (body: `uname`, `password`, optional `ProPicture`, `UserTypeID`)
+- POST `/api/auth/login` — login (body: `uname`, `password`)
+- GET `/api/auth/profile` — get profile (requires `Authorization: Bearer <token>`)
+- PUT `/api/auth/profile` — update profile (protected)
 
-## API Endpoints
+Environment variables (minimum)
+- `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `DB_DIALECT`
+- `JWT_SECRET`, `JWT_EXPIRY`
+- `DB_SYNC` (set to `true` only to allow sequelize.sync)
 
-### Authentication
+Security note
+- The project was adjusted per request: password hashing may be disabled in `services/authService.js` (plain-text storage). This is insecure — to restore secure behavior, re-enable bcrypt hashing in that file.
 
-#### Register User
-```http
-POST /api/auth/register
-Content-Type: application/json
+Where to look
+- Server entry: `server.js`
+- DB config: `config/db.js`
+- Models: `models/` (`User.js`, `UserType.js`)
+- Routes: `routes/auth.js`
+- Services: `services/authService.js`
+- Middleware: `middleware/auth.js`, `middleware/validation.js`
 
-{
-  "email": "user@example.com",
-  "password": "SecurePass123!",
-  "firstName": "John",
-  "lastName": "Doe",
-  "phone": "+1234567890"
-}
-```
+Docs
+- Legacy/archived docs moved to `docs/legacy/`.
 
-**Response (201):**
-```json
-{
-  "success": true,
-  "message": "User registered successfully",
-  "data": {
-    "id": "uuid-123",
-    "email": "user@example.com",
-    "firstName": "John",
-    "lastName": "Doe",
-    "role": "user"
-  }
-}
-```
+If you want, I can also:
+- Run the server now and verify startup (no DB ALTER will run).
+- Re-enable secure bcrypt hashing and add an env toggle to switch between hashed/plain passwords.
 
-#### Login
-```http
-POST /api/auth/login
-Content-Type: application/json
-
-{
-  "email": "user@example.com",
-  "password": "SecurePass123!"
-}
-```
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "message": "Login successful",
-  "data": {
-    "token": "eyJhbGciOiJIUzI1NiIs...",
-    "user": {
-      "id": "uuid-123",
-      "email": "user@example.com",
-      "firstName": "John",
-      "lastName": "Doe",
-      "role": "user"
-    }
-  }
-}
-```
-
-#### Get Profile
-```http
-GET /api/auth/profile
-Authorization: Bearer {token}
-```
-
-#### Update Profile
-```http
-PUT /api/auth/profile
-Authorization: Bearer {token}
-Content-Type: application/json
-
-{
-  "firstName": "Jane",
-  "phone": "+9876543210"
-}
-```
-
-## Validation Rules
-
-### Password Requirements
-- Minimum 8 characters
-- At least one uppercase letter
-- At least one lowercase letter
-- At least one number
-- At least one special character (@$!%*?&)
-
-### Email
-- Valid email format (RFC 5322)
-
-### Phone
-- Optional, digits and common separators (+, -, spaces, parentheses)
-
-### Names
-- Minimum 2 characters
-
-## Environment Configuration
-
-### Development
-- Full SQL logging enabled
-- Hot reload with nodemon
-- Relaxed CORS settings
-
-### Test
-- In-memory or test database
-- Minimal logging
-- Test runner configuration
-
-### Production
-- No SQL logging
-- Connection pooling optimized
-- Strict CORS settings
-- Error monitoring
-
-## Database Schema
-
-### Users Table
-```sql
-CREATE TABLE users (
-  id VARCHAR(36) PRIMARY KEY,
-  email VARCHAR(255) UNIQUE NOT NULL,
-  password VARCHAR(255) NOT NULL,
-  firstName VARCHAR(255) NOT NULL,
-  lastName VARCHAR(255) NOT NULL,
-  phone VARCHAR(20),
-  role ENUM('user', 'admin', 'manager') DEFAULT 'user',
-  status ENUM('active', 'inactive', 'suspended') DEFAULT 'active',
-  lastLogin DATETIME,
-  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-```
-
-## Security Best Practices Implemented
-
-✅ Password hashing with bcrypt (12 salt rounds)
-✅ JWT token expiration (7 days default)
-✅ CORS restriction to specific origins
-✅ Helmet for security headers
-✅ Input validation and sanitization
-✅ SQL injection prevention via Sequelize ORM
-✅ Role-based access control
-✅ Environment variable protection
-
-## Error Handling
-
-All endpoints return standardized error responses:
-
-```json
-{
-  "success": false,
-  "message": "Error description",
-  "errors": [
-    {
-      "field": "email",
-      "message": "Please provide a valid email"
-    }
-  ]
-}
-```
-
-## Logging
-
-Logs are stored in `/logs/` directory:
-- `all.log` - All application logs
-- `error.log` - Error logs only
-- Console output in development mode
-
-## Dependencies
-
-### Production
-- **express** - Web framework
-- **sequelize** - ORM for database
-- **mysql2** - MySQL client
-- **bcryptjs** - Password hashing
-- **jsonwebtoken** - JWT authentication
-- **express-validator** - Input validation
-- **dotenv** - Environment variables
-- **cors** - CORS middleware
-- **helmet** - Security headers
-- **morgan** - HTTP logging
-- **winston** - Application logging
-
-### Development
-- **nodemon** - Auto-reload on file changes
-- **jest** - Testing framework
-- **supertest** - HTTP testing
-- **sequelize-cli** - Database CLI tools
-
-## Troubleshooting
-
-### Database Connection Error
-- Check MySQL is running
-- Verify credentials in `.env`
-- Ensure databases exist
-
-### Password Validation Error
-- Password must meet all requirements
-- Check `.env` JWT_SECRET is set
-
-### Authentication Failed
-- Ensure Authorization header is present
-- Format: `Authorization: Bearer {token}`
-- Check token hasn't expired
-
-## Contributing
-
-1. Create feature branch
-2. Make changes with tests
-3. Submit pull request
-
-## License
-
-ISC
-
-## Support
-
-For issues or questions, please check the logs in `/logs/` directory for detailed error information.
+---
+Maintainer: Project workspace

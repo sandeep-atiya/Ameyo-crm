@@ -3,7 +3,7 @@ import { DataTypes } from 'sequelize';
 // Model mapping for existing MSSQL table `tblUser` from your database.
 // Column names are preserved (uID, uname, upassword, etc.) so Sequelize
 // reads/writes to the existing table correctly.
-export default (sequelize) => {
+export default (sequelize, DataTypesLocal = DataTypes) => {
   const User = sequelize.define('tblUser', {
     uID: {
       type: DataTypes.INTEGER,
@@ -15,7 +15,6 @@ export default (sequelize) => {
     uname: {
       type: DataTypes.STRING(50),
       allowNull: true,
-      unique: true,
       field: 'uname'
     },
     upassword: {
@@ -47,6 +46,13 @@ export default (sequelize) => {
     tableName: 'tblUser',
     timestamps: false
   });
+
+  // Associations will be attached in models/index.js after all models are loaded
+  User.associate = (models) => {
+    if (models.UserType) {
+      User.belongsTo(models.UserType, { foreignKey: 'UserTypeID', as: 'userType' });
+    }
+  };
 
   return User;
 };

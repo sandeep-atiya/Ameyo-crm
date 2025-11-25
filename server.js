@@ -75,11 +75,18 @@ const startServer = async () => {
     logger.info('✅ Database connected successfully');
 
     // Sync models (use alter for development only, remove in production)
-    if (NODE_ENV === 'development') {
-      await sequelize.sync({ alter: true });
+    // Sync models only when explicitly requested via DB_SYNC env var.
+    // This prevents Sequelize from auto-altering your existing tables.
+    const shouldSync = process.env.DB_SYNC === 'true';
+    if (shouldSync) {
+      if (NODE_ENV === 'development') {
+        await sequelize.sync({ alter: true });
+      } else {
+        await sequelize.sync();
+      }
       logger.info('✅ Database models synced');
     } else {
-      await sequelize.sync();
+      logger.info('➡️ Skipping sequelize.sync (set DB_SYNC=true to enable)');
     }
 
     // Start server
