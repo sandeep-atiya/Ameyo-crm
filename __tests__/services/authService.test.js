@@ -18,7 +18,7 @@ describe('Authentication Service', () => {
         password: 'TestPassword123!',
         firstName: 'John',
         lastName: 'Doe',
-        phone: '+1234567890'
+        phone: '+1234567890',
       };
 
       // Mock implementation
@@ -27,7 +27,7 @@ describe('Authentication Service', () => {
         email: userData.email,
         firstName: userData.firstName,
         lastName: userData.lastName,
-        role: 'user'
+        role: 'user',
       };
 
       // Note: In real tests, you would mock the User model properly
@@ -37,7 +37,7 @@ describe('Authentication Service', () => {
         email: 'test@example.com',
         firstName: 'John',
         lastName: 'Doe',
-        role: 'user'
+        role: 'user',
       };
 
       expect(result.email).toBe(userData.email);
@@ -49,7 +49,7 @@ describe('Authentication Service', () => {
         email: 'existing@example.com',
         password: 'TestPassword123!',
         firstName: 'Jane',
-        lastName: 'Smith'
+        lastName: 'Smith',
       };
 
       // This test would check for duplicate email error
@@ -61,7 +61,7 @@ describe('Authentication Service', () => {
         email: 'test@example.com',
         password: 'weak',
         firstName: 'John',
-        lastName: 'Doe'
+        lastName: 'Doe',
       };
 
       // This test would check password validation
@@ -82,8 +82,8 @@ describe('Authentication Service', () => {
           email: email,
           firstName: 'John',
           lastName: 'Doe',
-          role: 'user'
-        }
+          role: 'user',
+        },
       };
 
       expect(result.token).toBeDefined();
@@ -109,13 +109,13 @@ describe('Authentication Service', () => {
       const userId = 'uuid-123';
       const updateData = {
         firstName: 'Jane',
-        phone: '+9876543210'
+        phone: '+9876543210',
       };
 
       const result = {
         id: userId,
         firstName: 'Jane',
-        phone: '+9876543210'
+        phone: '+9876543210',
       };
 
       expect(result.firstName).toBe(updateData.firstName);
@@ -138,7 +138,7 @@ describe('Authentication Service', () => {
         email: 'test@example.com',
         firstName: 'John',
         lastName: 'Doe',
-        role: 'user'
+        role: 'user',
         // password should NOT be included
       };
 

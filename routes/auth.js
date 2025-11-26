@@ -1,5 +1,10 @@
 import express from 'express';
-import { validateBody, registerSchema, loginSchema, updateProfileSchema } from '../middleware/validation.js';
+import {
+  validateBody,
+  registerSchema,
+  loginSchema,
+  updateProfileSchema,
+} from '../middleware/validation.js';
 import { authenticate } from '../middleware/auth.js';
 import * as authController from '../controllers/authController.js';
 
@@ -13,6 +18,11 @@ router.post('/login', validateBody(loginSchema), authController.login);
 
 // Protected profile routes
 router.get('/profile', authenticate, authController.getProfile);
-router.put('/profile', authenticate, validateBody(updateProfileSchema), authController.updateProfile);
+router.put(
+  '/profile',
+  authenticate,
+  validateBody(updateProfileSchema),
+  authController.updateProfile
+);
 
 export default router;

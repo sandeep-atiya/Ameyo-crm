@@ -3,11 +3,13 @@
 ## ⚡ Get Running in 2 Minutes
 
 ### 1. Start Development Server
+
 ```bash
 npm run dev
 ```
 
 **Output should show:**
+
 ```
 ✅ Database connected successfully
 ✅ Database models synced
@@ -15,6 +17,7 @@ npm run dev
 ```
 
 ### 2. Test Register Endpoint
+
 ```bash
 curl -X POST http://localhost:5000/api/auth/register \
   -H "Content-Type: application/json" \
@@ -28,6 +31,7 @@ curl -X POST http://localhost:5000/api/auth/register \
 ```
 
 **Expected Response:**
+
 ```json
 {
   "success": true,
@@ -43,6 +47,7 @@ curl -X POST http://localhost:5000/api/auth/register \
 ```
 
 ### 3. Test Login Endpoint
+
 ```bash
 curl -X POST http://localhost:5000/api/auth/login \
   -H "Content-Type: application/json" \
@@ -53,6 +58,7 @@ curl -X POST http://localhost:5000/api/auth/login \
 ```
 
 **Expected Response:**
+
 ```json
 {
   "success": true,
@@ -70,26 +76,28 @@ curl -X POST http://localhost:5000/api/auth/login \
 ```
 
 ### 4. Test Protected Route (Profile)
+
 ```bash
 curl -X GET http://localhost:5000/api/auth/profile \
   -H "Authorization: Bearer {token_from_login}"
 ```
 
 ### 5. Run Tests
+
 ```bash
 npm test
 ```
 
 ## 🔑 Key Points
 
-| Item | Value |
-|------|-------|
-| **Database** | MSSQL (192.168.10.76:1433) |
-| **Database Name** | DristhiSoftTechDBOld |
-| **Dev Port** | 5000 |
-| **Test Port** | 5001 |
-| **JWT Expiry** | 7 days |
-| **Password Min Length** | 8 characters |
+| Item                      | Value                                         |
+| ------------------------- | --------------------------------------------- |
+| **Database**              | MSSQL (192.168.10.76:1433)                    |
+| **Database Name**         | DristhiSoftTechDBOld                          |
+| **Dev Port**              | 5000                                          |
+| **Test Port**             | 5001                                          |
+| **JWT Expiry**            | 7 days                                        |
+| **Password Min Length**   | 8 characters                                  |
 | **Password Requirements** | Uppercase + Lowercase + Number + Special Char |
 
 ## 📁 Important Files
@@ -106,11 +114,13 @@ middleware/              → Auth & validation
 ## 🚨 Troubleshooting
 
 **Port 5000 already in use?**
+
 ```bash
 # Change PORT in .env to 5001 or different number
 ```
 
 **Database connection error?**
+
 ```bash
 # Check .env has correct credentials:
 # DB_HOST=192.168.10.76
@@ -120,6 +130,7 @@ middleware/              → Auth & validation
 ```
 
 **Password validation fails?**
+
 ```bash
 # Use format: Password123@
 # Must have: UPPERCASE + lowercase + number + special char (@$!%*?&)

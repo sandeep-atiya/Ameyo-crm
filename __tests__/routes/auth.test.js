@@ -6,7 +6,7 @@ describe('Auth Routes', () => {
         password: 'ValidPass123!',
         firstName: 'John',
         lastName: 'Doe',
-        phone: '+1234567890'
+        phone: '+1234567890',
       };
 
       // Test would make POST request and expect 201
@@ -18,7 +18,7 @@ describe('Auth Routes', () => {
         email: 'test@example.com',
         password: 'weak',
         firstName: 'John',
-        lastName: 'Doe'
+        lastName: 'Doe',
       };
 
       // Test would make POST request and expect 400
@@ -30,7 +30,7 @@ describe('Auth Routes', () => {
         email: 'not-an-email',
         password: 'ValidPass123!',
         firstName: 'John',
-        lastName: 'Doe'
+        lastName: 'Doe',
       };
 
       // Test would make POST request and expect 400
@@ -42,7 +42,7 @@ describe('Auth Routes', () => {
         email: 'existing@example.com',
         password: 'ValidPass123!',
         firstName: 'John',
-        lastName: 'Doe'
+        lastName: 'Doe',
       };
 
       // Test would make POST request and expect 400
@@ -54,7 +54,7 @@ describe('Auth Routes', () => {
     it('should login with valid credentials', async () => {
       const credentials = {
         email: 'test@example.com',
-        password: 'ValidPass123!'
+        password: 'ValidPass123!',
       };
 
       // Test would make POST request and expect 200
@@ -64,7 +64,7 @@ describe('Auth Routes', () => {
     it('should fail with incorrect password', async () => {
       const credentials = {
         email: 'test@example.com',
-        password: 'WrongPassword'
+        password: 'WrongPassword',
       };
 
       // Test would make POST request and expect 401
@@ -74,7 +74,7 @@ describe('Auth Routes', () => {
     it('should fail if user does not exist', async () => {
       const credentials = {
         email: 'nonexistent@example.com',
-        password: 'AnyPassword123!'
+        password: 'AnyPassword123!',
       };
 
       // Test would make POST request and expect 401
@@ -82,7 +82,7 @@ describe('Auth Routes', () => {
 
     it('should fail if email is missing', async () => {
       const credentials = {
-        password: 'ValidPass123!'
+        password: 'ValidPass123!',
       };
 
       // Test would make POST request and expect 400
@@ -123,7 +123,7 @@ describe('Auth Routes', () => {
       const token = 'valid-jwt-token';
       const updateData = {
         firstName: 'Jane',
-        phone: '+9876543210'
+        phone: '+9876543210',
       };
 
       // Test would make PUT request with Authorization header
@@ -132,7 +132,7 @@ describe('Auth Routes', () => {
 
     it('should fail without authentication', async () => {
       const updateData = {
-        firstName: 'Jane'
+        firstName: 'Jane',
       };
 
       // Test would make PUT request without token
@@ -142,7 +142,7 @@ describe('Auth Routes', () => {
     it('should fail with invalid phone format', async () => {
       const token = 'valid-jwt-token';
       const updateData = {
-        phone: 'invalid-phone'
+        phone: 'invalid-phone',
       };
 
       // Test would make PUT request with invalid phone

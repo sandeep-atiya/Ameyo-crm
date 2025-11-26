@@ -8,7 +8,7 @@ export const authenticate = (req, res, next) => {
     if (!token) {
       return res.status(401).json({
         success: false,
-        message: 'No token provided'
+        message: 'No token provided',
       });
     }
 
@@ -19,7 +19,7 @@ export const authenticate = (req, res, next) => {
     logger.error('Authentication error:', error.message);
     return res.status(401).json({
       success: false,
-      message: 'Invalid or expired token'
+      message: 'Invalid or expired token',
     });
   }
 };
@@ -29,7 +29,7 @@ export const authorize = (...roles) => {
     if (!req.user) {
       return res.status(401).json({
         success: false,
-        message: 'User not authenticated'
+        message: 'User not authenticated',
       });
     }
 
@@ -37,7 +37,7 @@ export const authorize = (...roles) => {
       logger.warn(`Unauthorized access attempt by user ${req.user.id}`);
       return res.status(403).json({
         success: false,
-        message: 'Insufficient permissions'
+        message: 'Insufficient permissions',
       });
     }
 

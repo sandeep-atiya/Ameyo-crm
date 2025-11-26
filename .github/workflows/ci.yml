@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # ESLint check - will fail if issues found
+      - name: Run ESLint
+        id: eslint
+        run: |
+          npm run lint 2>&1 | tee eslint-report.txt
+          if [ ${PIPESTATUS[0]} -ne 0 ]; then
+            echo "❌ ESLint found errors"
+            exit 1
+          fi
+        continue-on-error: false
+
+      # Prettier format check - will fail if files not formatted
+      - name: Check code formatting with Prettier
+        id: prettier
+        run: |
+          npx prettier --check . 2>&1 | tee prettier-report.txt
+          if [ ${PIPESTATUS[0]} -ne 0 ]; then
+            echo "❌ Prettier formatting issues found"
+            exit 1
+          fi
+        continue-on-error: false
+
+      # Run tests
+      - name: Run tests
+        id: tests
+        run: |
+          npm test 2>&1 | tee test-report.txt
+          if [ ${PIPESTATUS[0]} -ne 0 ]; then
+            echo "❌ Tests failed"
+            exit 1
+          fi
+        continue-on-error: false
+
+      # Upload reports on failure for developers to review
+      - name: Upload ESLint report
+        if: failure() && steps.eslint.outcome == 'failure'
+        uses: actions/upload-artifact@v3
+        with:
+          name: eslint-report
+          path: eslint-report.txt
+
+      - name: Upload Prettier report
+        if: failure() && steps.prettier.outcome == 'failure'
+        uses: actions/upload-artifact@v3
+        with:
+          name: prettier-report
+          path: prettier-report.txt
+
+      - name: Upload test report
+        if: failure() && steps.tests.outcome == 'failure'
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-report
+          path: test-report.txt
+
+      # Create summary for CI results
+      - name: Create CI Summary
+        if: always()
+        run: |
+          echo "## CI/CD Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- ESLint: ${{ steps.eslint.outcome }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Prettier: ${{ steps.prettier.outcome }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Tests: ${{ steps.tests.outcome }}" >> $GITHUB_STEP_SUMMARY

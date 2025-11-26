@@ -3,12 +3,14 @@
 ## 🎉 What's Done
 
 ### ✓ Clean Configuration
+
 - **Single config file:** `config/db.js`
 - **Removed:** config.json, database.js, testDb.js (unnecessary duplicates)
 - **Database:** MSSQL 192.168.10.76:1433
 - **Setup:** Development, Test, Production environments
 
 ### ✓ Authentication System
+
 - **Register endpoint** - User registration with validation
 - **Login endpoint** - JWT token generation
 - **Profile endpoints** - Get & update user profile
@@ -16,11 +18,13 @@
 - **Password** - Bcrypt hashing with strength validation
 
 ### ✓ Database Structure
+
 - **User Model** - Complete with validation
 - **Fields:** id, email, password, firstName, lastName, phone, role, status, lastLogin
 - **ORM:** Sequelize with MSSQL support
 
 ### ✓ Core Files (Minimum Needed)
+
 ```
 config/db.js                    ← Database connection
 routes/auth.js                  ← API endpoints
@@ -34,6 +38,7 @@ server.js                       ← Main app
 ```
 
 ### ✓ Removed Unnecessary Files
+
 - ✗ config/config.json
 - ✗ config/database.js
 - ✗ config/testDb.js
@@ -41,27 +46,32 @@ server.js                       ← Main app
 - ✗ models/UserType.js
 
 ### ✓ Environment Configuration
+
 All three .env files configured for MSSQL:
 
 **`.env` (Development)**
+
 - Port: 5000
 - Logging: DEBUG
 - Auto-reload: Yes (nodemon)
 - Database: DristhiSoftTechDBOld
 
 **`.env.test` (Testing)**
+
 - Port: 5001
 - Logging: ERROR only
 - JWT Expiry: 1 hour
 - Database: DristhiSoftTechDBOld
 
 **`.env.production` (Production)**
+
 - Port: 5000
 - Logging: INFO
 - SSL: Enabled
 - CORS: Restricted (update domain)
 
 ### ✓ Documentation
+
 1. **README.md** - Full API documentation
 2. **SETUP_COMPLETE.md** - Detailed setup guide
 3. **CONFIG_SUMMARY.md** - Configuration reference
@@ -71,11 +81,13 @@ All three .env files configured for MSSQL:
 ## 🚀 To Start Using
 
 ### Step 1: Start Server
+
 ```bash
 npm run dev
 ```
 
 ### Step 2: Register User
+
 ```bash
 curl -X POST http://localhost:5000/api/auth/register \
   -H "Content-Type: application/json" \
@@ -89,6 +101,7 @@ curl -X POST http://localhost:5000/api/auth/register \
 ```
 
 ### Step 3: Login
+
 ```bash
 curl -X POST http://localhost:5000/api/auth/login \
   -H "Content-Type: application/json" \
@@ -99,6 +112,7 @@ curl -X POST http://localhost:5000/api/auth/login \
 ```
 
 ### Step 4: Use Token
+
 ```bash
 curl -X GET http://localhost:5000/api/auth/profile \
   -H "Authorization: Bearer {token}"
@@ -131,18 +145,18 @@ Database Dialect: MSSQL
 
 ## 📚 Files Guide
 
-| File | Purpose |
-|------|---------|
-| `server.js` | Main application entry point |
-| `config/db.js` | Database connection & configuration |
-| `routes/auth.js` | API endpoints for authentication |
-| `services/authService.js` | Authentication business logic |
-| `models/User.js` | User database schema |
-| `middleware/auth.js` | JWT verification middleware |
-| `middleware/validation.js` | Input validation rules |
-| `utils/logger.js` | Application logging setup |
-| `__tests__/` | Test files (Jest) |
-| `.env*` | Environment configuration |
+| File                       | Purpose                             |
+| -------------------------- | ----------------------------------- |
+| `server.js`                | Main application entry point        |
+| `config/db.js`             | Database connection & configuration |
+| `routes/auth.js`           | API endpoints for authentication    |
+| `services/authService.js`  | Authentication business logic       |
+| `models/User.js`           | User database schema                |
+| `middleware/auth.js`       | JWT verification middleware         |
+| `middleware/validation.js` | Input validation rules              |
+| `utils/logger.js`          | Application logging setup           |
+| `__tests__/`               | Test files (Jest)                   |
+| `.env*`                    | Environment configuration           |
 
 ## 🔧 Available Commands
 
@@ -181,23 +195,27 @@ npm run db:reset      # Reset database (dev only)
 ## 🎓 Next Steps
 
 ### Immediate (Now)
+
 1. Run `npm run dev`
 2. Test endpoints with curl or Postman
 3. Check logs in `logs/` folder
 
 ### Short Term (This Week)
+
 1. Add more models for your CRM data
 2. Create additional API routes
 3. Configure production domain
 4. Set up strong JWT secret
 
 ### Medium Term (Next Sprint)
+
 1. Add customer/lead models
 2. Implement dashboard endpoints
 3. Set up email notifications
 4. Add file upload capability
 
 ### Long Term
+
 1. Deploy to production
 2. Set up CI/CD pipeline
 3. Monitor and optimize
@@ -210,12 +228,14 @@ npm run db:reset      # Reset database (dev only)
 **Main API Base URL:** `http://localhost:5000/api`
 
 **Auth Endpoints:**
+
 - `POST /auth/register` - Register new user
 - `POST /auth/login` - Login user
 - `GET /auth/profile` - Get user profile (protected)
 - `PUT /auth/profile` - Update profile (protected)
 
 **Headers for Protected Routes:**
+
 ```
 Authorization: Bearer {jwt_token_from_login}
 ```

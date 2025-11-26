@@ -16,9 +16,9 @@ const dbConfig = {
     dialectOptions: {
       options: {
         encrypt: false,
-        trustServerCertificate: true
-      }
-    }
+        trustServerCertificate: true,
+      },
+    },
   },
   test: {
     username: process.env.DB_USER || 'sa',
@@ -30,9 +30,9 @@ const dbConfig = {
     dialectOptions: {
       options: {
         encrypt: false,
-        trustServerCertificate: true
-      }
-    }
+        trustServerCertificate: true,
+      },
+    },
   },
   production: {
     username: process.env.DB_USER || 'sa',
@@ -44,33 +44,26 @@ const dbConfig = {
     dialectOptions: {
       options: {
         encrypt: true,
-        trustServerCertificate: false
-      }
-    }
-  }
+        trustServerCertificate: false,
+      },
+    },
+  },
 };
 
 const config = dbConfig[env];
 
-const sequelize = new Sequelize(
-  config.database,
-  config.username,
-  config.password,
-  {
-    host: config.host,
-    port: config.port,
-    dialect: config.dialect,
-    dialectOptions: config.dialectOptions,
-    logging: env === 'development' ? console.log : false,
-    pool: {
-      max: env === 'production' ? 10 : 5,
-      min: env === 'production' ? 5 : 0,
-      acquire: 30000,
-      idle: 10000
-    }
-  }
-);
+const sequelize = new Sequelize(config.database, config.username, config.password, {
+  host: config.host,
+  port: config.port,
+  dialect: config.dialect,
+  dialectOptions: config.dialectOptions,
+  logging: env === 'development' ? console.log : false,
+  pool: {
+    max: env === 'production' ? 10 : 5,
+    min: env === 'production' ? 5 : 0,
+    acquire: 30000,
+    idle: 10000,
+  },
+});
 
 export default sequelize;
-
-

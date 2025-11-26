@@ -63,17 +63,18 @@ CRM/
 
 ## 🗑️ Files Removed
 
-| File | Reason |
-|------|--------|
-| `config/config.json` | Replaced by environment-based db.js |
-| `config/database.js` | Duplicate of db.js |
-| `config/testDb.js` | Test DB in db.js handles all environments |
-| `routes/authRoutes.js` | Empty file, replaced by auth.js |
-| `models/UserType.js` | Legacy file, not needed |
+| File                   | Reason                                    |
+| ---------------------- | ----------------------------------------- |
+| `config/config.json`   | Replaced by environment-based db.js       |
+| `config/database.js`   | Duplicate of db.js                        |
+| `config/testDb.js`     | Test DB in db.js handles all environments |
+| `routes/authRoutes.js` | Empty file, replaced by auth.js           |
+| `models/UserType.js`   | Legacy file, not needed                   |
 
 ## ✓ Core Files Structure
 
 ### Configuration (1 file)
+
 ```
 config/db.js
 ├── Supports: development, test, production
@@ -83,6 +84,7 @@ config/db.js
 ```
 
 ### Models (2 files)
+
 ```
 models/
 ├── index.js - Auto-loads all models
@@ -93,6 +95,7 @@ models/
 ```
 
 ### Routes (1 file)
+
 ```
 routes/auth.js
 ├── POST /api/auth/register - Register new user
@@ -102,6 +105,7 @@ routes/auth.js
 ```
 
 ### Services (1 file)
+
 ```
 services/authService.js
 ├── registerUser() - Handle registration logic
@@ -111,6 +115,7 @@ services/authService.js
 ```
 
 ### Middleware (2 files)
+
 ```
 middleware/
 ├── auth.js - JWT verification & role-based access
@@ -118,6 +123,7 @@ middleware/
 ```
 
 ### Testing (2 files)
+
 ```
 __tests__/
 ├── services/authService.test.js - Service logic tests
@@ -125,6 +131,7 @@ __tests__/
 ```
 
 ### Utilities (1 file)
+
 ```
 utils/logger.js
 ├── Winston logger setup
@@ -156,6 +163,7 @@ npm run db:reset
 ## 📊 Environment Variables
 
 All three .env files configured for MSSQL:
+
 - `.env` - Development (debug logging)
 - `.env.test` - Testing (error logging)
 - `.env.production` - Production (info logging)
@@ -173,21 +181,25 @@ All three .env files configured for MSSQL:
 ## 🎯 Next Steps
 
 1. **Start Development:**
+
    ```bash
    npm run dev
    ```
 
 2. **Test Endpoints:**
+
    - Register: `POST /api/auth/register`
    - Login: `POST /api/auth/login`
    - Profile: `GET /api/auth/profile`
 
 3. **Run Tests:**
+
    ```bash
    npm test
    ```
 
 4. **Add More Models:**
+
    - Create in `/models/`
    - Import in `models/index.js`
    - Use Sequelize patterns

@@ -46,7 +46,7 @@ app.get('/health', (req, res) => {
   res.status(200).json({
     success: true,
     message: 'Server is running',
-    environment: NODE_ENV
+    environment: NODE_ENV,
   });
 });
 
@@ -54,7 +54,7 @@ app.get('/health', (req, res) => {
 app.use((req, res) => {
   res.status(404).json({
     success: false,
-    message: 'Route not found'
+    message: 'Route not found',
   });
 });
 
@@ -63,7 +63,7 @@ app.use((err, req, res, next) => {
   logger.error(`Error: ${err.message}`);
   res.status(err.status || 500).json({
     success: false,
-    message: err.message || 'Internal server error'
+    message: err.message || 'Internal server error',
   });
 });
 

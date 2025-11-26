@@ -3,6 +3,7 @@
 ## Current Configuration
 
 ### Database Connection (All Environments)
+
 ```
 Host: 192.168.10.76
 Port: 1433
@@ -15,15 +16,17 @@ Driver: MSSQL (Sequelize with Tedious)
 ### Environment Files Created
 
 #### 1. `.env` (Development)
+
 - **Status:** ✅ Active
 - **NODE_ENV:** development
 - **Port:** 5000
 - **Logging:** DEBUG level
 - **Database:** Connected to DristhiSoftTechDBOld
-- **CORS:** Open to all origins (*)
+- **CORS:** Open to all origins (\*)
 - **JWT Secret:** Change in production
 
 #### 2. `.env.test` (Testing)
+
 - **Status:** ✅ Created
 - **NODE_ENV:** test
 - **Port:** 5001
@@ -33,6 +36,7 @@ Driver: MSSQL (Sequelize with Tedious)
 - **Use Command:** `npm test`
 
 #### 3. `.env.production` (Production)
+
 - **Status:** ✅ Created
 - **NODE_ENV:** production
 - **Port:** 5000
@@ -57,33 +61,37 @@ npm start
 
 ### Key Configuration Variables
 
-| Variable | Development | Test | Production |
-|----------|-----------|------|-----------|
-| NODE_ENV | development | test | production |
-| PORT | 5000 | 5001 | 5000 |
-| LOG_LEVEL | debug | error | info |
-| JWT_EXPIRY | 7d | 1h | 7d |
-| DB_POOL_MAX | 5 | 5 | 10 |
-| DB_POOL_MIN | 0 | 0 | 5 |
-| SSL | false | false | true |
-| CORS_ORIGIN | * | localhost | your-domain.com |
+| Variable    | Development | Test      | Production      |
+| ----------- | ----------- | --------- | --------------- |
+| NODE_ENV    | development | test      | production      |
+| PORT        | 5000        | 5001      | 5000            |
+| LOG_LEVEL   | debug       | error     | info            |
+| JWT_EXPIRY  | 7d          | 1h        | 7d              |
+| DB_POOL_MAX | 5           | 5         | 10              |
+| DB_POOL_MIN | 0           | 0         | 5               |
+| SSL         | false       | false     | true            |
+| CORS_ORIGIN | \*          | localhost | your-domain.com |
 
 ### MSSQL Configuration Details
 
 **Dialect Options:**
+
 - Encryption: Disabled for development/test, enabled for production
 - Trust Server Certificate: true for development/test, false for production
 
 **Connection Pooling:**
+
 - Acquire Timeout: 30 seconds
 - Idle Timeout: 10 seconds
 
 **Development Features:**
+
 - SQL query logging enabled
 - Database alter on sync
 - Nodemon auto-reload
 
 **Production Features:**
+
 - SQL query logging disabled
 - Error-level only logging
 - Connection pooling optimized
@@ -99,6 +107,7 @@ npm start
 ### Database Specific Settings
 
 **For MSSQL Compatibility:**
+
 - Dialect: mssql
 - Driver: tedious (npm mssql package)
 - Pool settings tuned for connection stability
@@ -108,6 +117,7 @@ npm start
 ### Recommended Next Steps for Production
 
 1. **Security Updates:**
+
    ```env
    # .env.production
    JWT_SECRET=generate_strong_random_string_here_min_32_chars
@@ -116,16 +126,19 @@ npm start
    ```
 
 2. **Database Credentials:**
+
    - Create a dedicated service account for your app
    - Use strong password
    - Restrict database access to app account
 
 3. **Logging & Monitoring:**
+
    - Set up log aggregation (ELK, Splunk, etc.)
    - Monitor error.log for issues
    - Set up alerting on critical errors
 
 4. **SSL/TLS:**
+
    - Ensure MSSQL has SSL certificate
    - Enable encryption in production .env
 
@@ -157,7 +170,7 @@ cat .env.production
 
 ⚠️ **Production JWT_SECRET must be unique and strong** - Currently set to placeholder
 
-⚠️ **CORS_ORIGIN should be restricted** - Currently set to * for development only
+⚠️ **CORS_ORIGIN should be restricted** - Currently set to \* for development only
 
 ⚠️ **Database password in plain text** - Ensure .env is in .gitignore
 

@@ -1,26 +1,9 @@
 import jwt from 'jsonwebtoken';
-import sequelize from '../config/db.js';
-import defineUser from '../models/User.js';
-import defineUserType from '../models/UserType.js';
+import db from '../models/index.js';
 import logger from '../utils/logger.js';
 
-const User = defineUser(sequelize);
-const UserType = defineUserType(sequelize);
-
-// Ensure associations exist when models are instantiated directly here
-try {
-  if (typeof User.belongsTo === 'function' && typeof UserType === 'object') {
-    // attach association only if not already defined
-    if (!User.associations || !User.associations.userType) {
-      User.belongsTo(UserType, { foreignKey: 'UserTypeID', as: 'userType' });
-    }
-    if (!UserType.associations || !UserType.associations.users) {
-      UserType.hasMany(User, { foreignKey: 'UserTypeID', as: 'users' });
-    }
-  }
-} catch (e) {
-  // ignore association errors
-}
+const User = db.tblUser;
+const UserType = db.UserType;
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecret';
 const JWT_EXPIRY = process.env.JWT_EXPIRY || '7d';
@@ -39,7 +22,7 @@ export const registerUser = async ({ uname, password, ProPicture, UserTypeID }) 
 
     logger.info(`User registered: ${uname}`);
 
-    return { user: created }; 
+    return { user: created };
   } catch (err) {
     logger.error('registerUser error', err.message);
     throw err;
@@ -48,19 +31,28 @@ export const registerUser = async ({ uname, password, ProPicture, UserTypeID }) 
 
 export const loginUser = async (uname, password) => {
   try {
-    const user = await User.findOne({ where: { uname }, include: [{ model: UserType, as: 'userType' }] });
+    const user = await User.findOne({
+      where: { uname },
+      include: [{ model: UserType, as: 'userType' }],
+    });
     if (!user) throw new Error('Invalid credentials');
 
     // Plain-text password comparison (insecure) per request
-    const isValid = (password === (user.upassword || ''));
+    const isValid = password === (user.upassword || '');
     if (!isValid) throw new Error('Invalid credentials');
 
     // Update password update / last login timestamp (non-blocking)
-    try { await user.update({ PasswordUpdate: new Date() }); } catch (e) { /* ignore */ }
+    try {
+      await user.update({ PasswordUpdate: new Date() });
+    } catch (e) {
+      /* ignore */
+    }
 
     const roleText = user.userType?.UserTypeText || 'user';
 
-    const token = jwt.sign({ uID: user.uID, uname: user.uname, role: roleText }, JWT_SECRET, { expiresIn: JWT_EXPIRY });
+    const token = jwt.sign({ uID: user.uID, uname: user.uname, role: roleText }, JWT_SECRET, {
+      expiresIn: JWT_EXPIRY,
+    });
 
     return { token, user };
   } catch (err) {

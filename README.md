@@ -5,34 +5,40 @@ A professional-grade Customer Relationship Management (CRM) system built with No
 ## Features
 
 ✅ **Authentication & Authorization**
+
 - JWT-based authentication
 - Bcrypt password hashing
 - Role-based access control (Admin, Manager, User)
 - User session management
 
 ✅ **Validation**
+
 - Request validation with Express-validator
 - Password strength requirements
 - Email format validation
 - Phone number validation
 
 ✅ **Database**
+
 - MySQL database support
 - Sequelize ORM
 - Environment-based configuration (Dev, Test, Prod)
 - Database migrations and seeders
 
 ✅ **Logging**
+
 - Winston logger with file and console transport
 - Environment-specific logging levels
 - Error tracking and debugging
 
 ✅ **Testing**
+
 - Jest test framework
 - Unit and integration tests
 - Test coverage reporting
 
 ✅ **Security**
+
 - Helmet for HTTP security headers
 - CORS protection
 - Input sanitization
@@ -40,7 +46,7 @@ A professional-grade Customer Relationship Management (CRM) system built with No
 
 ## Project Structure
 
-```
+````
 ├── config/
 │   ├── config.json          # Database configuration
 │   └── db.js               # Database connection
@@ -66,9 +72,11 @@ Quick start
 1. Install dependencies:
 ```powershell
 npm install
-```
+````
+
 2. Copy `.env.example` to `.env` and set your DB and JWT values.
 3. Start the server:
+
 ```powershell
 node server.js
 # or in dev:
@@ -76,23 +84,28 @@ npm run dev
 ```
 
 Important: DB sync
+
 - Sequelize auto-sync/alter is disabled by default. To allow it (development only), set `DB_SYNC=true` in your `.env`. Do not enable this against production databases unless you know what changes will be applied.
 
 API (auth)
+
 - POST `/api/auth/register` — register user (body: `uname`, `password`, optional `ProPicture`, `UserTypeID`)
 - POST `/api/auth/login` — login (body: `uname`, `password`)
 - GET `/api/auth/profile` — get profile (requires `Authorization: Bearer <token>`)
 - PUT `/api/auth/profile` — update profile (protected)
 
 Environment variables (minimum)
+
 - `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `DB_DIALECT`
 - `JWT_SECRET`, `JWT_EXPIRY`
 - `DB_SYNC` (set to `true` only to allow sequelize.sync)
 
 Security note
+
 - The project was adjusted per request: password hashing may be disabled in `services/authService.js` (plain-text storage). This is insecure — to restore secure behavior, re-enable bcrypt hashing in that file.
 
 Where to look
+
 - Server entry: `server.js`
 - DB config: `config/db.js`
 - Models: `models/` (`User.js`, `UserType.js`)
@@ -101,11 +114,54 @@ Where to look
 - Middleware: `middleware/auth.js`, `middleware/validation.js`
 
 Docs
+
 - Legacy/archived docs moved to `docs/legacy/`.
 
 If you want, I can also:
+
 - Run the server now and verify startup (no DB ALTER will run).
 - Re-enable secure bcrypt hashing and add an env toggle to switch between hashed/plain passwords.
 
+## Development tooling: ESLint, Prettier, CI, Dependabot
+
+This project includes recommended files to enable automated linting, formatting and dependency updates.
+
+- ESLint config: `.eslintrc.js`
+- Prettier config: `.prettierrc`
+- Dependabot config: `.github/dependabot.yml`
+- GitHub Actions CI workflow: `.github/workflows/ci.yml`
+- Example environment variables: `.env.example`
+
+Quick usage:
+
+1. Install dev dependencies locally:
+
+```powershell
+npm install --save-dev eslint prettier eslint-config-prettier eslint-plugin-prettier eslint-plugin-node eslint-plugin-import husky lint-staged
+```
+
+2. Run the linter:
+
+```powershell
+npm run lint
+```
+
+3. Auto-fix issues where possible:
+
+```powershell
+npm run lint:fix
+npm run format
+```
+
+4. Set up Husky hooks (one-time on contributor machine):
+
+```powershell
+npm run prepare
+npx husky add .husky/pre-commit "npx lint-staged"
+```
+
+`lint-staged` is already prepared in `package.json` to run ESLint and Prettier on staged files. After running `npm run prepare` and adding the `pre-commit` hook, commits will be automatically formatted/linted.
+
 ---
+
 Maintainer: Project workspace

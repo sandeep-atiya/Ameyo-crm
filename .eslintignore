@@ -1,0 +1,12 @@
+node_modules
+coverage
+dist
+build
+.env
+.env.*
+logs
+public/uploads
+*.min.js
+*.bundle.js
+coverage/
+**/vendor/

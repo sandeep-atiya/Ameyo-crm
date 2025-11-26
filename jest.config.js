@@ -5,10 +5,10 @@ module.exports = {
     'services/**/*.js',
     'middleware/**/*.js',
     'routes/**/*.js',
-    'controllers/**/*.js'
+    'controllers/**/*.js',
   ],
   testMatch: ['**/__tests__/**/*.test.js', '**/?(*.)+(spec|test).js'],
   transform: {},
   extensionsToTreatAsEsm: ['.js'],
-  testTimeout: 10000
+  testTimeout: 10000,
 };
