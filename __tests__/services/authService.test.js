@@ -1,10 +1,16 @@
 import bcrypt from 'bcryptjs';
-import * as authService from '../../services/authService.js';
+import * as authService from '../../src/services/auth.service.js';
 
-// Mock dependencies
-jest.mock('../../config/db.js');
-jest.mock('../../models/User.js');
-jest.mock('../../utils/logger.js');
+// Mock dependencies (mock repository and logger to avoid DB/model loading)
+jest.mock('../../src/repositories/user.repository.js', () => ({
+  createUser: jest.fn(),
+  findUserByUsername: jest.fn(),
+  findUserById: jest.fn(),
+  updateUser: jest.fn(),
+}));
+jest.mock('../../src/utils/logger.js', () => ({
+  default: { info: jest.fn(), error: jest.fn(), warn: jest.fn() },
+}));
 
 describe('Authentication Service', () => {
   beforeEach(() => {

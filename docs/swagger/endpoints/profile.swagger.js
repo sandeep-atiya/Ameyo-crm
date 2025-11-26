@@ -16,9 +16,9 @@
  *     summary: Get user profile
  *     description: |
  *       Retrieves the current authenticated user's profile information.
- *       
+ *
  *       **Authentication:** Required (Bearer Token)
- *       
+ *
  *       **Rate Limited:** 1000 requests per 15 minutes (dev), 100 (prod)
  *     security:
  *       - bearerAuth: []
@@ -98,11 +98,11 @@
  *     summary: Update user profile
  *     description: |
  *       Updates the current authenticated user's profile information.
- *       
+ *
  *       **Authentication:** Required (Bearer Token)
- *       
+ *
  *       **Rate Limited:** 1000 requests per 15 minutes (dev), 100 (prod)
- *       
+ *
  *       **Updateable fields:** password, ProPicture
  *     security:
  *       - bearerAuth: []

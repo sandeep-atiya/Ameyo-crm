@@ -16,9 +16,9 @@
  *     summary: Register a new user
  *     description: |
  *       Creates a new user account with username and password.
- *       
+ *
  *       **Rate Limited:** 30 requests per 15 minutes (dev), 5 (prod)
- *       
+ *
  *       **Security:** Input sanitized against XSS attacks
  *     requestBody:
  *       required: true
@@ -127,11 +127,11 @@
  *     summary: User login
  *     description: |
  *       Authenticates a user and returns a JWT token for subsequent requests.
- *       
+ *
  *       **Rate Limited:** 30 requests per 15 minutes (dev), 5 (prod)
- *       
+ *
  *       **Rate limit key:** Combined IP + username
- *       
+ *
  *       **Security:** Rate limited to prevent brute force attacks
  *     requestBody:
  *       required: true

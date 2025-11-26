@@ -23,6 +23,7 @@ docs/swagger/
 **Purpose:** Central configuration for Swagger/OpenAPI
 
 **Defines:**
+
 - API title, version, and description
 - Server URLs (development, production)
 - API contact information
@@ -30,11 +31,13 @@ docs/swagger/
 - References to all endpoint and schema files
 
 **When to modify:**
+
 - Update API version
 - Add new servers/environments
 - Change contact information
 
 **Example:**
+
 ```javascript
 import swaggerJsdoc from 'swagger-jsdoc';
 
@@ -61,6 +64,7 @@ const swaggerConfig = {
 **Purpose:** Define reusable data schemas
 
 **Contains:**
+
 - User schema
 - UserType schema
 - Success response schema
@@ -69,11 +73,13 @@ const swaggerConfig = {
 - Rate limit error schema
 
 **When to modify:**
+
 - Add new entity (e.g., Product, Customer)
 - Update existing schema properties
 - Add new common schemas
 
 **Example:**
+
 ```javascript
 /**
  * @swagger
@@ -95,10 +101,12 @@ const swaggerConfig = {
 **Purpose:** Document authentication endpoints
 
 **Includes:**
+
 - POST /api/auth/register
 - POST /api/auth/login
 
 **Details documented:**
+
 - Request body schema
 - Response schemas
 - Error responses
@@ -106,6 +114,7 @@ const swaggerConfig = {
 - Security requirements
 
 **Example:**
+
 ```javascript
 /**
  * @swagger
@@ -132,6 +141,7 @@ const swaggerConfig = {
 **Purpose:** Document profile management endpoints
 
 **Includes:**
+
 - GET /api/auth/profile
 - PUT /api/auth/profile
 
@@ -161,9 +171,9 @@ Use this template for each endpoint:
  *     summary: Get all products
  *     description: |
  *       Retrieves a paginated list of all products.
- *       
+ *
  *       **Authentication:** Required (Bearer Token)
- *       
+ *
  *       **Rate Limited:** 1000 requests per 15 minutes
  *     security:
  *       - bearerAuth: []
@@ -237,7 +247,7 @@ const swaggerConfig = {
     './docs/swagger/schemas.js',
     './docs/swagger/endpoints/auth.swagger.js',
     './docs/swagger/endpoints/profile.swagger.js',
-    './docs/swagger/endpoints/products.swagger.js',  // ← Add this line
+    './docs/swagger/endpoints/products.swagger.js', // ← Add this line
   ],
 };
 ```
@@ -255,6 +265,7 @@ const swaggerConfig = {
 ### 1. Be Descriptive
 
 ✅ **Good:**
+
 ```javascript
 /**
  * @swagger
@@ -263,7 +274,7 @@ const swaggerConfig = {
  *     summary: Get user by ID
  *     description: |
  *       Retrieves a specific user's profile information.
- *       
+ *
  *       **Authentication:** Required
  *       **Permission:** Own profile or Admin
  *       **Rate Limited:** 1000/15min
@@ -271,6 +282,7 @@ const swaggerConfig = {
 ```
 
 ❌ **Bad:**
+
 ```javascript
 /**
  * @swagger
@@ -283,6 +295,7 @@ const swaggerConfig = {
 ### 2. Include Examples
 
 ✅ **Good:**
+
 ```javascript
 example:
   id: 1
@@ -294,6 +307,7 @@ example:
 ### 3. Document Error Responses
 
 ✅ **Good:**
+
 ```javascript
 responses:
   200:
@@ -433,10 +447,8 @@ responses:
 For arrays:
 
 ```javascript
-schema:
-  type: array
-  items:
-    $ref: '#/components/schemas/User'
+schema: type: array;
+items: $ref: '#/components/schemas/User';
 ```
 
 ---

@@ -2,7 +2,9 @@ version: '3.8'
 
 services:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.dev
     container_name: ameyo-crm-app
     ports:
       - '5000:5000'

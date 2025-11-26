@@ -8,7 +8,8 @@ export default {
     'controllers/**/*.js',
   ],
   testMatch: ['**/__tests__/**/*.test.js', '**/?(*.)+(spec|test).js'],
-  transform: {},
-  extensionsToTreatAsEsm: ['.js'],
+  transform: {
+    '^.+\\.js$': 'babel-jest',
+  },
   testTimeout: 10000,
 };

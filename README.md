@@ -1,103 +1,182 @@
-# CRM Application - Professional Setup
+# Ameyo CRM - Professional Backend API
 
-A professional-grade Customer Relationship Management (CRM) system built with Node.js, Express, and Sequelize ORM with enterprise-grade monitoring, security, and API documentation.
+A scalable, well-organized, and production-ready Node.js/Express CRM application with comprehensive authentication, validation, middleware, and monitoring systems.
 
-## Features
+## 🚀 Quick Start
+
+### Prerequisites
+
+- **Node.js** 18+
+- **npm** or **yarn**
+- **MSSQL Server** (configured)
+- **.env** file configured (copy from `.env.example`)
+
+### Installation & Setup
+
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Configure environment variables
+cp .env.example .env
+# Edit .env with your database credentials
+
+# 3. Start development server
+npm run dev
+
+# 4. Visit API documentation
+# Open http://localhost:5000/api-docs in your browser
+```
+
+## 📁 Project Structure
+
+```
+src/
+├── routes/              # API route definitions (auth.routes.js, user.routes.js)
+├── controllers/         # HTTP request handlers (auth.controller.js, user.controller.js)
+├── services/           # Business logic layer (auth.service.js, user.service.js)
+├── repositories/       # Data access layer (user.repository.js)
+├── models/            # Sequelize ORM models (user.model.js, user-type.model.js)
+├── middleware/        # Express middleware (auth.js, error-handler.js, rate-limiter.js, sanitizer.js)
+├── validations/       # Joi validation schemas (auth.validation.js, user.validation.js)
+├── constants/         # Application constants and configurations
+├── utils/            # Utility functions (response-formatter.js, sanitizer.js, logger.js)
+├── exceptions/       # Custom error classes (AppError, ValidationError, etc.)
+└── config/           # Database and app configuration (db.js)
+
+documentation/        # Comprehensive guides and documentation
+tests/               # Test suites
+logs/                # Application logs
+public/              # Static files and assets
+```
+
+## 📚 Documentation
+
+All documentation is organized in the `documentation/` folder. Start with:
+
+- **DEVELOPER_INDEX.md** - Navigation guide for developers
+- **PROJECT_STRUCTURE_DIAGRAM.md** - Visual project organization
+- **CODE_OF_CONDUCT.md** - Community guidelines
+- **CONTRIBUTING.md** - Contribution guidelines
+
+## 🔑 Key Features
 
 ✅ **Authentication & Authorization**
 
-- JWT-based authentication
-- Bcrypt password hashing
-- Role-based access control (Admin, Manager, User)
-- User session management
+- JWT-based authentication with configurable expiry
+- Protected routes with `authenticate` middleware
+- Secure token generation and validation
 
-✅ **Validation**
+✅ **Validation System**
 
-- Request validation with Express-validator
-- Password strength requirements
-- Email format validation
-- Phone number validation
+- Joi schema validation for all inputs
+- Separate validation files per feature (auth.validation.js, user.validation.js)
+- Validation middleware for body, params, and query strings
 
-✅ **Database**
+✅ **Middleware Stack**
 
-- MSSQL database support
-- Sequelize ORM
-- Environment-based configuration (Dev, Test, Prod)
-- Database migrations and seeders
+- Auth Middleware - JWT token verification
+- Error Handler - Centralized error handling with proper HTTP status codes
+- Request Logger - Comprehensive request logging via Morgan
+- Rate Limiter - Brute force protection (configurable per environment)
+- Sanitizer - XSS protection via input sanitization
 
-✅ **Logging**
+✅ **Error Handling**
 
-- Winston logger with file and console transport
-- Environment-specific logging levels
-- Error tracking and debugging
+- Custom exception classes for different error types
+- Global error handler middleware
+- Proper HTTP status codes for all responses
 
-✅ **Testing**
+✅ **Data Layer Separation**
 
-- Jest test framework
-- Unit and integration tests
-- Test coverage reporting
+- Repositories - Pure database query functions
+- Services - Business logic and orchestration
+- Controllers - HTTP request handling
+- Models - Sequelize ORM definitions
 
-✅ **Security**
+✅ **Code Quality**
 
-- Helmet for HTTP security headers
-- CORS protection
-- Input sanitization with XSS prevention
-- Rate limiting with adaptive thresholds
-- Strict CSP headers
-
-✅ **API Documentation**
-
-- Swagger/OpenAPI integration
-- Interactive API explorer at `/api-docs`
-- Comprehensive endpoint documentation
-- Request/response examples
+- ESLint & Prettier for consistent code style
+- Comprehensive JSDoc comments
+- Semantic naming conventions
+- Modular and scalable architecture
 
 ✅ **Monitoring & Observability**
 
+- Prometheus metrics endpoint (`/metrics`)
 - Sentry error tracking (optional)
-- Prometheus metrics collection
-- Custom request duration tracking
-- Database query monitoring
-- Health check endpoints (/health, /live, /ready)
+- Health check endpoints (`/health`, `/live`, `/ready`)
+- Structured logging with Winston
 
-✅ **CI/CD & Deployment**
+## 🔗 API Endpoints
 
-- GitHub Actions workflows
-- Semantic versioning with automatic CHANGELOG generation
-- Docker containerization (dev + prod)
-- Multi-stage production builds
+### Authentication
 
-## Project Structure
+```
+POST   /api/auth/register     - Register new user
+POST   /api/auth/login        - Authenticate user and get token
+GET    /api/auth/profile      - Get authenticated user's profile (requires token)
+PUT    /api/auth/profile      - Update authenticated user's profile (requires token)
+```
 
-````
-├── config/
-│   ├── config.json          # Database configuration
-│   └── db.js               # Database connection
-├── controllers/            # Business logic
-├── middleware/
-│   ├── auth.js            # Authentication middleware
-│   └── validation.js      # Input validation
-├── models/
-│   ├── index.js           # Model loader
-# Ameyo CRM (concise)
+### Users
 
-Lightweight CRM API built with Node.js, Express, and Sequelize (MSSQL).
+```
+GET    /api/users             - Get all users with pagination (requires token)
+GET    /api/users/:userId     - Get user by ID (requires token)
+PUT    /api/users/:userId     - Update user (requires token)
+DELETE /api/users/:userId     - Delete user (requires token)
+```
 
-This repository is configured to use an existing MSSQL database (`DristhiSoftTechDBOld`) and exposes authentication endpoints (register, login, profile). The project is intended to work with a pre-existing schema — automatic schema changes are disabled by default.
+### System
 
-Quick facts
-- Frameworks: Node.js, Express
-- ORM: Sequelize (dialect: mssql)
-- Auth: JWT
-- DB: Microsoft SQL Server (existing schema)
+```
+GET    /api-docs             - Swagger/OpenAPI documentation
+GET    /health               - Health check
+GET    /live                 - Liveness probe
+GET    /ready                - Readiness probe (includes DB check)
+GET    /metrics              - Prometheus metrics
+```
 
-Quick start
-1. Install dependencies:
-```powershell
-npm install
-````
+## 📋 NPM Scripts
 
-2. Copy `.env.example` to `.env` and set your DB and JWT values.
+```bash
+npm run dev              # Start development server with nodemon
+npm start               # Start production server
+npm test               # Run tests
+npm run lint          # Check code with ESLint
+npm run lint:fix      # Auto-fix ESLint issues
+npm run format        # Format code with Prettier
+npm run db:migrate    # Run database migrations
+npm run db:seed       # Run database seeders
+npm run db:reset      # Reset database
+```
+
+## 🛡️ Security Features
+
+- **Password Hashing** - bcryptjs for password encryption
+- **JWT Tokens** - Secure token-based authentication
+- **Rate Limiting** - Protect endpoints from brute force attacks
+- **XSS Protection** - Input sanitization middleware
+- **CORS** - Cross-origin resource sharing control
+- **Helmet** - HTTP security headers
+- **Request Validation** - Joi schemas for all inputs
+
+## 🗄️ Database
+
+### Configuration
+
+Database credentials are configured via `.env` file:
+
+```env
+DB_HOST=192.168.10.76
+DB_PORT=1433
+DB_USERNAME=sa
+DB_PASSWORD=your_password
+DB_NAME=DristhiSoftTechDBOld
+DB_DIALECT=mssql
+```
+
 3. Start the server:
 
 ```powershell
@@ -271,22 +350,27 @@ Access interactive API documentation at http://localhost:5000/api-docs when the 
 ### Example Usage
 
 \\\ash
+
 # View documentation
+
 curl http://localhost:5000/api-docs
 
 # Register a new user
+
 curl -X POST http://localhost:5000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"uname":"john_doe","password":"password123"}'
+ -H "Content-Type: application/json" \
+ -d '{"uname":"john_doe","password":"password123"}'
 
 # Login
+
 curl -X POST http://localhost:5000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"uname":"john_doe","password":"password123"}'
+ -H "Content-Type: application/json" \
+ -d '{"uname":"john_doe","password":"password123"}'
 
 # Get profile (with token)
+
 curl -X GET http://localhost:5000/api/auth/profile \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+ -H "Authorization: Bearer YOUR_JWT_TOKEN"
 \\\
 
 ---
@@ -298,11 +382,13 @@ curl -X GET http://localhost:5000/api/auth/profile \
 The API includes adaptive rate limiting to prevent abuse:
 
 **Development Mode:**
+
 - General API: 1000 requests per 15 minutes
 - Authentication: 30 attempts per 15 minutes
 - Sensitive operations: 10 requests per 15 minutes
 
 **Production Mode:**
+
 - General API: 100 requests per 15 minutes
 - Authentication: 5 attempts per 15 minutes
 - Sensitive operations: 2 requests per 15 minutes
@@ -325,12 +411,13 @@ When rate limit exceeded:
 
 \\\json
 {
-  "success": false,
-  "message": "Too many requests from this IP, please try again later."
+"success": false,
+"message": "Too many requests from this IP, please try again later."
 }
 \\\
 
-Response includes \RateLimit-*\ headers:
+Response includes \RateLimit-\*\ headers:
+
 - \RateLimit-Limit\: Maximum requests allowed
 - \RateLimit-Remaining\: Requests remaining
 - \RateLimit-Reset\: Timestamp when limit resets
@@ -346,11 +433,14 @@ Prometheus metrics are available at \/metrics\ for monitoring and alerting.
 #### Metrics Collected
 
 1. **HTTP Metrics**
+
    - \http_request_duration_seconds\ - Request duration histogram (method, route, status)
    - \http_requests_total\ - Total requests counter
-   - \equest_errors_total\ - Error counter
+   - \
+     equest_errors_total\ - Error counter
 
 2. **Database Metrics**
+
    - \database_query_duration_seconds\ - Query duration histogram
 
 3. **Node.js Metrics** (automatic)
@@ -362,10 +452,13 @@ Prometheus metrics are available at \/metrics\ for monitoring and alerting.
 #### Example Usage
 
 \\\ash
+
 # View metrics
+
 curl http://localhost:5000/metrics
 
 # Sample output
+
 http_request_duration_seconds_bucket{method="GET",route="/api/auth/profile",status_code="200",le="0.1"} 5
 http_requests_total{method="POST",route="/api/auth/login",status_code="200"} 23
 request_errors_total{method="GET",route="/api/auth/profile",status_code="401"} 2
@@ -382,6 +475,7 @@ SENTRY_TRACES_SAMPLE_RATE=0.1
 \\\
 
 **Features:**
+
 - ? Automatic error capture and reporting
 - ? Error grouping by type and status
 - ? Performance monitoring
@@ -393,9 +487,9 @@ SENTRY_TRACES_SAMPLE_RATE=0.1
 \\\javascript
 // Errors are automatically captured and sent to Sentry
 try {
-  throw new Error('Something went wrong');
+throw new Error('Something went wrong');
 } catch (error) {
-  // Automatically sent to Sentry
+// Automatically sent to Sentry
 }
 \\\
 
@@ -422,16 +516,20 @@ chore(deps): update dependencies
 \\\
 
 **Types:**
+
 - \eat\ ? MINOR version bump (feature)
 - \ix\ ? PATCH version bump (bug fix)
 - \perf\ ? PATCH version bump (performance)
-- \evert\ ? PATCH version bump
-- \efactor\, \docs\, \	est\, \chore\ ? No version bump
+- \
+  evert\ ? PATCH version bump
+- \
+  efactor\, \docs\, \ est\, \chore\ ? No version bump
 
 ### Automatic Release Process
 
 1. Push commits to \main\ branch
-2. GitHub Actions \elease.yml\ workflow runs
+2. GitHub Actions \
+   elease.yml\ workflow runs
 3. \semantic-release\ analyzes commits
 4. CHANGELOG.md updated
 5. package.json version bumped
@@ -443,4 +541,3 @@ chore(deps): update dependencies
 \\\ash
 npm run release
 \\\
-

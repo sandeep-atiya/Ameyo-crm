@@ -1,0 +1,64 @@
+---
+# ServiceMonitor for Prometheus
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: ameyo-app-monitor
+  namespace: ameyo-crm
+  labels:
+    app: ameyo-app
+spec:
+  selector:
+    matchLabels:
+      app: ameyo-app
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s
+
+---
+# PrometheusRule for alerting
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: ameyo-app-rules
+  namespace: ameyo-crm
+spec:
+  groups:
+    - name: ameyo-app
+      interval: 30s
+      rules:
+        - alert: Ameyo_AppDown
+          expr: up{job="ameyo-app"} == 0
+          for: 2m
+          annotations:
+            summary: 'Ameyo App is down'
+            description: 'Ameyo App pod {{ $labels.pod }} is down'
+
+        - alert: Ameyo_HighErrorRate
+          expr: rate(request_errors_total[5m]) > 0.1
+          for: 5m
+          annotations:
+            summary: 'High error rate detected'
+            description: 'Error rate is {{ $value }} errors per second'
+
+        - alert: Ameyo_HighMemoryUsage
+          expr: container_memory_usage_bytes{pod=~"ameyo-app.*"} / 524288000 > 0.8
+          for: 5m
+          annotations:
+            summary: 'High memory usage'
+            description: 'Pod {{ $labels.pod }} is using > 80% memory'
+
+        - alert: Ameyo_HighCPUUsage
+          expr: rate(container_cpu_usage_seconds_total{pod=~"ameyo-app.*"}[5m]) > 0.8
+          for: 5m
+          annotations:
+            summary: 'High CPU usage'
+            description: 'Pod {{ $labels.pod }} is using > 80% CPU'
+
+        - alert: Ameyo_DatabaseDown
+          expr: up{job="ameyo-mssql"} == 0
+          for: 1m
+          annotations:
+            summary: 'Database is down'
+            description: 'MSSQL database is unreachable'

@@ -1,18 +1,23 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import morgan from 'morgan';
 import dotenv from 'dotenv';
 import * as Sentry from '@sentry/node';
 import swaggerUi from 'swagger-ui-express';
 
-import sequelize from './config/db.js';
+import sequelize from './src/config/db.js';
 import swaggerSpecs from './docs/swagger/swaggerConfig.js';
-import logger from './utils/logger.js';
+import { logger } from './src/utils/index.js';
 import { metricsMiddleware, register } from './utils/metrics.js';
-import { sanitizeMiddleware } from './middleware/sanitizer.js';
-import { generalLimiter, authLimiter } from './middleware/rateLimiter.js';
-import authRoutes from './routes/auth.js';
+import {
+  sanitizeMiddleware,
+  requestLogger,
+  generalLimiter,
+  authLimiter,
+  errorHandler,
+  notFoundHandler,
+} from './src/middleware/index.js';
+import { setupRoutes } from './src/routes/index.js';
 
 dotenv.config();
 
@@ -54,18 +59,8 @@ app.use(sanitizeMiddleware);
 // Request metrics collection
 app.use(metricsMiddleware);
 
-// Logging middleware
-if (NODE_ENV === 'development') {
-  app.use(morgan('dev'));
-} else {
-  app.use(morgan('combined'));
-}
-
 // Request logging
-app.use((req, res, _next) => {
-  logger.http(`${req.method} ${req.path}`);
-  _next();
-});
+app.use(requestLogger);
 
 // Apply general rate limiter to all routes except health checks and metrics
 app.use((req, _res, next) => {
@@ -84,9 +79,11 @@ app.use((req, _res, next) => {
 // Swagger API documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs, { explorer: true }));
 
-// Routes
-// Auth routes with stricter rate limiting
-app.use('/api/auth', authLimiter, authRoutes);
+// Setup all routes
+setupRoutes(app);
+
+// Apply auth rate limiter to auth endpoints
+app.use('/api/auth', authLimiter);
 
 // Prometheus metrics endpoint
 app.get('/metrics', (_req, res) => {
@@ -135,27 +132,10 @@ app.get('/ready', async (req, res) => {
 });
 
 // 404 handler
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: 'Route not found',
-  });
-});
+app.use(notFoundHandler);
 
-// Error handler
-app.use((err, _req, res, _next) => {
-  logger.error(`Error: ${err.message}`);
-
-  // Send error to Sentry if enabled
-  if (process.env.SENTRY_DSN) {
-    Sentry.captureException(err);
-  }
-
-  res.status(err.status || 500).json({
-    success: false,
-    message: err.message || 'Internal server error',
-  });
-});
+// Global error handler
+app.use(errorHandler);
 
 // Sentry error handler (if enabled)
 if (process.env.SENTRY_DSN) {
