@@ -45,6 +45,37 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Liveness probe (is the server alive?)
+app.get('/live', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Server is alive',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// Readiness probe (is the server ready to serve requests?)
+app.get('/ready', async (req, res) => {
+  try {
+    // Check database connectivity
+    await sequelize.authenticate();
+    res.status(200).json({
+      success: true,
+      message: 'Server is ready',
+      database: 'connected',
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    logger.error(`Readiness check failed: ${error.message}`);
+    res.status(503).json({
+      success: false,
+      message: 'Server not ready',
+      database: 'disconnected',
+      error: error.message,
+    });
+  }
+});
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({

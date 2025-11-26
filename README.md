@@ -83,6 +83,55 @@ node server.js
 npm run dev
 ```
 
+## Production deployment
+
+These are basic steps to build and run the app in production using the
+multi-stage Dockerfile and `docker-compose.prod.yml` included in this repo.
+
+1. Build the production image locally (or use your CI to build and push):
+
+```bash
+docker build -f Dockerfile.prod -t ameyo-crm:latest .
+```
+
+2. Push to your registry (example):
+
+```bash
+docker tag ameyo-crm:latest your-registry/ameyo-crm:latest
+docker push your-registry/ameyo-crm:latest
+```
+
+3. Start production services with the production compose file (ensure
+   environment variables are provided securely - do not commit secrets):
+
+```bash
+# Use an env file or set environment variables from your secret manager
+docker compose -f docker-compose.prod.yml up -d
+```
+
+Notes:
+
+- Do not store `JWT_SECRET`, DB passwords, or other secrets in the repository.
+- For production consider using a managed database (Azure SQL, AWS RDS) instead
+  of running SQL Server in a container, and use network-restricted access.
+- Monitoring, automated backups, and secure secret injection (K8s secrets,
+  Docker secrets, or cloud secret managers) are strongly recommended.
+
+## CI: Build and publish Docker image
+
+You can automate building and pushing the production Docker image using
+the included GitHub Actions workflow `.github/workflows/docker-publish.yml`.
+
+Required repository secrets (set in the GitHub repository Settings → Secrets):
+
+- `DOCKER_REGISTRY` — e.g. `docker.io` or `ghcr.io` (the registry hostname)
+- `DOCKER_USERNAME` — username for the registry
+- `DOCKER_PASSWORD` — password or token for the registry
+- `DOCKER_IMAGE_NAME` — image name including namespace, e.g. `myorg/ameyo-crm`
+
+After setting secrets, push to `main` or trigger the workflow manually from
+the Actions tab to build and push the image.
+
 Important: DB sync
 
 - Sequelize auto-sync/alter is disabled by default. To allow it (development only), set `DB_SYNC=true` in your `.env`. Do not enable this against production databases unless you know what changes will be applied.
@@ -93,6 +142,22 @@ API (auth)
 - POST `/api/auth/login` — login (body: `uname`, `password`)
 - GET `/api/auth/profile` — get profile (requires `Authorization: Bearer <token>`)
 - PUT `/api/auth/profile` — update profile (protected)
+
+Health & Readiness Checks
+
+The server exposes three health-check endpoints for monitoring and orchestration:
+
+- `GET /health` — basic health status (no dependencies checked)
+- `GET /live` — liveness probe (is the server alive?)
+- `GET /ready` — readiness probe (is the server ready to serve requests? includes DB connectivity check)
+
+Example:
+
+```bash
+curl http://localhost:5000/health
+# Response (200 if ready):
+# {"success":true,"message":"Server is ready","database":"connected","timestamp":"2025-11-26T..."}
+```
 
 Environment variables (minimum)
 

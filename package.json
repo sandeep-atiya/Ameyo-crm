@@ -16,7 +16,8 @@
     "lint:fix": "eslint . --ext .js --fix --ignore-path .eslintignore",
     "format": "prettier --write .",
     "prepare": "husky install",
-    "ci": "npm run lint && npm test"
+    "ci": "npm run lint && npm test",
+    "release": "semantic-release"
   },
   "keywords": [],
   "author": "",
@@ -50,7 +51,8 @@
     "nodemon": "^3.1.11",
     "prettier": "^2.8.8",
     "sequelize-cli": "^6.6.3",
-    "supertest": "^6.3.3"
+    "supertest": "^6.3.3",
+    "semantic-release": "^19.0.0"
   },
   "lint-staged": {
     "*.js": [
