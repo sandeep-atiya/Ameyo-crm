@@ -1,6 +1,6 @@
 # CRM Application - Professional Setup
 
-A professional-grade Customer Relationship Management (CRM) system built with Node.js, Express, and Sequelize ORM.
+A professional-grade Customer Relationship Management (CRM) system built with Node.js, Express, and Sequelize ORM with enterprise-grade monitoring, security, and API documentation.
 
 ## Features
 
@@ -20,7 +20,7 @@ A professional-grade Customer Relationship Management (CRM) system built with No
 
 ✅ **Database**
 
-- MySQL database support
+- MSSQL database support
 - Sequelize ORM
 - Environment-based configuration (Dev, Test, Prod)
 - Database migrations and seeders
@@ -41,8 +41,31 @@ A professional-grade Customer Relationship Management (CRM) system built with No
 
 - Helmet for HTTP security headers
 - CORS protection
-- Input sanitization
-- Rate limiting ready
+- Input sanitization with XSS prevention
+- Rate limiting with adaptive thresholds
+- Strict CSP headers
+
+✅ **API Documentation**
+
+- Swagger/OpenAPI integration
+- Interactive API explorer at `/api-docs`
+- Comprehensive endpoint documentation
+- Request/response examples
+
+✅ **Monitoring & Observability**
+
+- Sentry error tracking (optional)
+- Prometheus metrics collection
+- Custom request duration tracking
+- Database query monitoring
+- Health check endpoints (/health, /live, /ready)
+
+✅ **CI/CD & Deployment**
+
+- GitHub Actions workflows
+- Semantic versioning with automatic CHANGELOG generation
+- Docker containerization (dev + prod)
+- Multi-stage production builds
 
 ## Project Structure
 
@@ -230,3 +253,194 @@ npx husky add .husky/pre-commit "npx lint-staged"
 ---
 
 Maintainer: Project workspace
+
+---
+
+## API Documentation
+
+Access interactive API documentation at http://localhost:5000/api-docs when the server is running.
+
+### Swagger/OpenAPI Features
+
+- ? Browse all endpoints with descriptions
+- ? View request/response schemas
+- ? Try endpoints directly from the UI
+- ? Understand authentication requirements
+- ? See example values
+
+### Example Usage
+
+\\\ash
+# View documentation
+curl http://localhost:5000/api-docs
+
+# Register a new user
+curl -X POST http://localhost:5000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"uname":"john_doe","password":"password123"}'
+
+# Login
+curl -X POST http://localhost:5000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"uname":"john_doe","password":"password123"}'
+
+# Get profile (with token)
+curl -X GET http://localhost:5000/api/auth/profile \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+\\\
+
+---
+
+## Rate Limiting & Security
+
+### Rate Limiting Configuration
+
+The API includes adaptive rate limiting to prevent abuse:
+
+**Development Mode:**
+- General API: 1000 requests per 15 minutes
+- Authentication: 30 attempts per 15 minutes
+- Sensitive operations: 10 requests per 15 minutes
+
+**Production Mode:**
+- General API: 100 requests per 15 minutes
+- Authentication: 5 attempts per 15 minutes
+- Sensitive operations: 2 requests per 15 minutes
+
+### Input Sanitization
+
+All user input is automatically sanitized to prevent XSS attacks:
+
+\\\javascript
+// Dangerous input
+{ "username": "<script>alert('XSS')</script>" }
+
+// After sanitization
+{ "username": "alert('XSS')" }
+\\\
+
+### Rate Limit Response
+
+When rate limit exceeded:
+
+\\\json
+{
+  "success": false,
+  "message": "Too many requests from this IP, please try again later."
+}
+\\\
+
+Response includes \RateLimit-*\ headers:
+- \RateLimit-Limit\: Maximum requests allowed
+- \RateLimit-Remaining\: Requests remaining
+- \RateLimit-Reset\: Timestamp when limit resets
+
+---
+
+## Monitoring & Observability
+
+### Prometheus Metrics
+
+Prometheus metrics are available at \/metrics\ for monitoring and alerting.
+
+#### Metrics Collected
+
+1. **HTTP Metrics**
+   - \http_request_duration_seconds\ - Request duration histogram (method, route, status)
+   - \http_requests_total\ - Total requests counter
+   - \equest_errors_total\ - Error counter
+
+2. **Database Metrics**
+   - \database_query_duration_seconds\ - Query duration histogram
+
+3. **Node.js Metrics** (automatic)
+   - Process memory usage
+   - Process CPU usage
+   - Event loop lag
+   - Garbage collection statistics
+
+#### Example Usage
+
+\\\ash
+# View metrics
+curl http://localhost:5000/metrics
+
+# Sample output
+http_request_duration_seconds_bucket{method="GET",route="/api/auth/profile",status_code="200",le="0.1"} 5
+http_requests_total{method="POST",route="/api/auth/login",status_code="200"} 23
+request_errors_total{method="GET",route="/api/auth/profile",status_code="401"} 2
+\\\
+
+### Sentry Error Tracking (Optional)
+
+Configure error tracking by setting \SENTRY_DSN\ in \.env\:
+
+\\\env
+SENTRY_DSN=https://your-sentry-dsn@sentry.io/project-id
+SENTRY_ENVIRONMENT=production
+SENTRY_TRACES_SAMPLE_RATE=0.1
+\\\
+
+**Features:**
+- ? Automatic error capture and reporting
+- ? Error grouping by type and status
+- ? Performance monitoring
+- ? Breadcrumb tracking for debugging
+- ? Environment-specific configuration
+
+#### Example
+
+\\\javascript
+// Errors are automatically captured and sent to Sentry
+try {
+  throw new Error('Something went wrong');
+} catch (error) {
+  // Automatically sent to Sentry
+}
+\\\
+
+---
+
+## Semantic Versioning & Releases
+
+This project uses \semantic-release\ for automated versioning and CHANGELOG generation.
+
+### Commit Message Format
+
+Follow Angular commit convention:
+
+\\\
+<type>(<scope>): <subject>
+
+feat(auth): add two-factor authentication
+fix(user): resolve profile update bug
+docs(readme): update installation instructions
+perf(db): optimize query performance
+refactor(middleware): simplify error handling
+test(login): add edge case tests
+chore(deps): update dependencies
+\\\
+
+**Types:**
+- \eat\ ? MINOR version bump (feature)
+- \ix\ ? PATCH version bump (bug fix)
+- \perf\ ? PATCH version bump (performance)
+- \evert\ ? PATCH version bump
+- \efactor\, \docs\, \	est\, \chore\ ? No version bump
+
+### Automatic Release Process
+
+1. Push commits to \main\ branch
+2. GitHub Actions \elease.yml\ workflow runs
+3. \semantic-release\ analyzes commits
+4. CHANGELOG.md updated
+5. package.json version bumped
+6. New GitHub release created
+7. Changes committed back to \main\
+
+### Manual Release
+
+\\\ash
+npm run release
+\\\
+
