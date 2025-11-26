@@ -36,7 +36,7 @@
     "joi": "^18.0.2",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.1",
-    "mssql": "^10.0.2",
+    "mssql": "^12.1.1",
     "prom-client": "^15.0.0",
     "sequelize": "^6.37.7",
     "swagger-jsdoc": "^6.2.8",
