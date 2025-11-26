@@ -20,14 +20,10 @@ export const registerSchema = Joi.object({
     .max(50)
     .required()
     .messages({ 'string.empty': 'Username is required' }),
-  password: Joi.string()
-    .min(8)
-    .pattern(passwordPattern)
-    .required()
-    .messages({
-      'string.pattern.base':
-        'Password must contain uppercase, lowercase, number, and special character',
-    }),
+  password: Joi.string().min(8).pattern(passwordPattern).required().messages({
+    'string.pattern.base':
+      'Password must contain uppercase, lowercase, number, and special character',
+  }),
   ProPicture: Joi.string().uri().optional(),
   TeamLeader: Joi.number().integer().optional(),
   // allow additional optional fields present in your tblUser table

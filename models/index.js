@@ -1,13 +1,7 @@
-import fs from 'fs';
-import path from 'path';
 import { Sequelize, DataTypes } from 'sequelize';
-import { fileURLToPath } from 'url';
 import sequelize from '../config/db.js';
 import defineUser from './User.js';
 import defineUserType from './UserType.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const db = {};
 

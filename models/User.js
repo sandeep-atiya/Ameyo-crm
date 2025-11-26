@@ -3,7 +3,7 @@ import { DataTypes } from 'sequelize';
 // Model mapping for existing MSSQL table `tblUser` from your database.
 // Column names are preserved (uID, uname, upassword, etc.) so Sequelize
 // reads/writes to the existing table correctly.
-export default (sequelize, DataTypesLocal = DataTypes) => {
+export default (sequelize, _DataTypes = DataTypes) => {
   const User = sequelize.define(
     'tblUser',
     {

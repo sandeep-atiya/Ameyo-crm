@@ -3,17 +3,12 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
-import { fileURLToPath } from 'url';
-import path from 'path';
 
 import sequelize from './config/db.js';
 import logger from './utils/logger.js';
 import authRoutes from './routes/auth.js';
 
 dotenv.config();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -33,9 +28,9 @@ if (NODE_ENV === 'development') {
 }
 
 // Request logging
-app.use((req, res, next) => {
+app.use((req, res, _next) => {
   logger.http(`${req.method} ${req.path}`);
-  next();
+  _next();
 });
 
 // Routes
@@ -59,7 +54,7 @@ app.use((req, res) => {
 });
 
 // Error handler
-app.use((err, req, res, next) => {
+app.use((err, _req, res, _next) => {
   logger.error(`Error: ${err.message}`);
   res.status(err.status || 500).json({
     success: false,
@@ -95,7 +90,7 @@ const startServer = async () => {
     });
   } catch (error) {
     logger.error(`❌ Server startup failed: ${error.message}`);
-    process.exit(1);
+    throw error;
   }
 };
 
