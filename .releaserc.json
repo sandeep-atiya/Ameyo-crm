@@ -1,5 +1,19 @@
 {
-  "branches": ["main"],
+  "branches": [
+    "main",
+    {
+      "name": "staging",
+      "prerelease": "rc"
+    },
+    {
+      "name": "testing",
+      "prerelease": "testing"
+    },
+    {
+      "name": "development",
+      "prerelease": "dev"
+    }
+  ],
   "plugins": [
     [
       "@semantic-release/commit-analyzer",
@@ -21,6 +35,10 @@
           {
             "type": "revert",
             "release": "patch"
+          },
+          {
+            "breaking": true,
+            "release": "major"
           },
           {
             "type": "docs",
@@ -53,7 +71,7 @@
           "noteKeywords": ["BREAKING CHANGE", "BREAKING CHANGES"]
         },
         "writerOpts": {
-          "commitsSort": ["subject"],
+          "commitsSort": ["type", "scope", "subject"],
           "noteGroupsSort": ["BREAKING CHANGES"]
         }
       }
@@ -67,9 +85,9 @@
     [
       "@semantic-release/github",
       {
-        "successComment": "🎉 This issue has been resolved in version ${nextRelease.version} (Released ${new Date(now).toDateString()})",
-        "failComment": "❌ This issue is still unresolved",
-        "failTitle": "The automated release failed",
+        "successComment": "🎉 Resolved in version ${nextRelease.version} (${new Date().toDateString()})",
+        "failComment": "❌ Automated release failed",
+        "failTitle": "Release Error",
         "labels": false,
         "releasedLabels": false
       }

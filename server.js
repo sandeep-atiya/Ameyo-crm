@@ -86,9 +86,20 @@ setupRoutes(app);
 app.use('/api/auth', authLimiter);
 
 // Prometheus metrics endpoint
-app.get('/metrics', (_req, res) => {
-  res.set('Content-Type', register.contentType);
-  res.end(register.metrics());
+
+app.get('/metrics', async (_req, res) => {
+  try {
+    const metrics = await register.metrics(); // <-- IMPORTANT: await the Promise
+
+    res.set('Content-Type', register.contentType);
+    res.end(metrics);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error generating Prometheus metrics',
+      error: error.message,
+    });
+  }
 });
 
 // Health check endpoints
