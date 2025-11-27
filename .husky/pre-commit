@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Optional pre-commit checks: warn but don't block
+# Full CI checks happen on push to main
+echo "ℹ️  Running lint-staged for staged files..."
+npx lint-staged --allow-empty || true

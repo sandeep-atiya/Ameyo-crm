@@ -1,0 +1,103 @@
+{
+  "branches": [
+    "main",
+    {
+      "name": "staging",
+      "prerelease": "rc"
+    },
+    {
+      "name": "testing",
+      "prerelease": "testing"
+    },
+    {
+      "name": "development",
+      "prerelease": "dev"
+    }
+  ],
+  "plugins": [
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "preset": "angular",
+        "releaseRules": [
+          {
+            "type": "feat",
+            "release": "minor"
+          },
+          {
+            "type": "fix",
+            "release": "patch"
+          },
+          {
+            "type": "perf",
+            "release": "patch"
+          },
+          {
+            "type": "revert",
+            "release": "patch"
+          },
+          {
+            "breaking": true,
+            "release": "major"
+          },
+          {
+            "type": "docs",
+            "release": false
+          },
+          {
+            "type": "style",
+            "release": false
+          },
+          {
+            "type": "refactor",
+            "release": false
+          },
+          {
+            "type": "test",
+            "release": false
+          },
+          {
+            "type": "chore",
+            "release": false
+          }
+        ]
+      }
+    ],
+    [
+      "@semantic-release/release-notes-generator",
+      {
+        "preset": "angular",
+        "parserOpts": {
+          "noteKeywords": ["BREAKING CHANGE", "BREAKING CHANGES"]
+        },
+        "writerOpts": {
+          "commitsSort": ["type", "scope", "subject"],
+          "noteGroupsSort": ["BREAKING CHANGES"]
+        }
+      }
+    ],
+    [
+      "@semantic-release/changelog",
+      {
+        "changelogFile": "CHANGELOG.md"
+      }
+    ],
+    [
+      "@semantic-release/github",
+      {
+        "successComment": "🎉 Resolved in version ${nextRelease.version} (${new Date().toDateString()})",
+        "failComment": "❌ Automated release failed",
+        "failTitle": "Release Error",
+        "labels": false,
+        "releasedLabels": false
+      }
+    ],
+    [
+      "@semantic-release/git",
+      {
+        "assets": ["package.json", "CHANGELOG.md"],
+        "message": "chore(release): ${nextRelease.version}\n\n${nextRelease.notes}"
+      }
+    ]
+  ]
+}
