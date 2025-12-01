@@ -62,7 +62,7 @@
     "lint-staged": "^13.3.0",
     "nodemon": "^3.1.11",
     "prettier": "^2.8.8",
-    "semantic-release": "^20.1.0",
+    "semantic-release": "^25.0.2",
     "sequelize-cli": "^6.6.3",
     "supertest": "^6.3.3"
   },
